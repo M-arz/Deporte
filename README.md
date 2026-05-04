@@ -14,17 +14,27 @@ Aplicación estática (HTML, CSS, JavaScript) para gestionar un torneo de fútbo
 3. Abre `js/config.js` y rellena al menos `SUPABASE_URL` y `SUPABASE_ANON`. Si usas EmailJS en la página de inicio de sesión, rellena también las tres constantes `EMAILJS_*`.
 4. Sirve la carpeta del proyecto con cualquier servidor HTTP estático (por ejemplo la extensión “Live Server” del editor, o `npx serve .`).
 
-> **Nota:** En este repositorio suele existir `js/config.js` versionado para que el despliegue en Vercel funcione sin paso de build. Si el repo es público, evita incluir secretos que no deban exponerse; la clave **anon** de Supabase está pensada para el cliente, pero conviene no publicar claves de servicio ni credenciales privadas.
+> **Nota:** En este repositorio suele existir `js/config.js` versionado para que el despliegue funcione sin paso de build. Si el repo es público, evita incluir secretos que no deban exponerse; la clave **anon** de Supabase está pensada para el cliente, pero conviene no publicar claves de servicio ni credenciales privadas.
+
+## Despliegue en Vercel y Render
+
+El mismo código puede publicarse en **Vercel** y en **Render** (sitio estático). Recomendación práctica:
+
+- Elige **un** sitio como “oficial” para enlaces y pruebas (menos confusión con cookies y orígenes).
+- Mantén **la misma cadena de CSP** y las cabeceras de seguridad en **`vercel.json`** y **`render.yaml`** cuando cambies proveedores o CDN.
+- En **`vercel.json`** existen cabeceras **CORS** (`Access-Control-Allow-Origin`, etc.) fijadas al dominio de Vercel; en **Render** no se repiten: la app se sirve todo desde el mismo origen y no suele hacer falta CORS para HTML/CSS/JS. Si en el futuro necesitas CORS en Render, configúralo en el panel de Render o amplía `render.yaml` con el origen correcto.
+
+En Render, el blueprint **`render.yaml`** define rutas (por ejemplo reescrituras de `.sql` / `.md` a `404.html`) y cabeceras. Tras cambiar el archivo, vuelve a desplegar el servicio estático para que aplique.
 
 ## Política de seguridad (CSP)
 
-La política **Content-Security-Policy** se define en un solo lugar para el despliegue en Vercel:
+La política **Content-Security-Policy** la envían los servidores en cabeceras HTTP (no en `<meta>` en las páginas). Debe coincidir entre:
 
-- Archivo: **`vercel.json`** → bloque `headers` → cabecera `Content-Security-Policy`.
+- **`vercel.json`** → `headers` → `Content-Security-Policy`
+- **`render.yaml`** → `headers` → misma cabecera en `path: /*`
+- **`.htaccess`** (solo si sirves el proyecto con Apache) → `Header set Content-Security-Policy`
 
-Las páginas HTML **no** repiten la CSP en un `<meta http-equiv="...">`, para no duplicar ni chocar reglas.
-
-Si sirves el sitio con **Apache** y `.htaccess`, la misma cadena de política está reflejada en la directiva `Header set Content-Security-Policy` de **`.htaccess`**; si cambias orígenes (nuevo CDN, otro proveedor de API), actualiza **ambos** archivos para que coincidan.
+Si añades un nuevo dominio de API o CDN, actualiza **los tres** sitios anteriores para que la cadena sea idéntica.
 
 Resumen de la política actual:
 
@@ -39,7 +49,8 @@ Resumen de la política actual:
 | `js/config.js` | URL y claves (crear desde `config.example.js`) |
 | `js/db.js` | Cliente Supabase y operaciones de datos |
 | `js/frame-bust.js` | Protección frente a clickjacking (misma CSP estricta en scripts) |
-| `vercel.json` | Cabeceras de seguridad y CSP |
+| `vercel.json` | Cabeceras de seguridad, CSP y caché (Vercel) |
+| `render.yaml` | Mismo esquema de cabeceras y caché (Render estático) |
 
 ## Licencia y uso
 

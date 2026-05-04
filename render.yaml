@@ -1,11 +1,12 @@
+# Sitio estático en Render — mantener cabeceras alineadas con vercel.json (misma CSP y políticas).
+# https://render.com/docs/static-site-headers
 services:
   - type: web
     name: torneo-de-futbol
     env: static
     buildCommand: ""
     staticPublishPath: "./"
-    
-    # Redirecciones para ocultar archivos sensibles de OWASP ZAP
+
     routes:
       - type: rewrite
         source: /*.sql
@@ -13,24 +14,55 @@ services:
       - type: rewrite
         source: /*.md
         destination: /404.html
-      - type: rewrite
-        source: /*.json
-        destination: /404.html
-        
-    # Cabeceras de seguridad estrictas exigidas por OWASP ZAP
+
     headers:
+      # --- Global (mismo bloque que source "/(.*)" en vercel.json) ---
       - path: /*
-        name: X-Frame-Options
-        value: DENY
+        name: Content-Security-Policy
+        value: "default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: blob: https://*.supabase.co; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.emailjs.com; object-src 'none'; worker-src 'none'; media-src 'none'; form-action 'self'; base-uri 'self'; frame-ancestors 'none';"
       - path: /*
-        name: X-Content-Type-Options
-        value: nosniff
-      - path: /*
-        name: Referrer-Policy
-        value: strict-origin-when-cross-origin
+        name: X-Permitted-Cross-Domain-Policies
+        value: none
       - path: /*
         name: Strict-Transport-Security
         value: max-age=31536000; includeSubDomains; preload
       - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: X-Frame-Options
+        value: DENY
+      - path: /*
+        name: Referrer-Policy
+        value: strict-origin-when-cross-origin
+      - path: /*
         name: Permissions-Policy
-        value: geolocation=(), microphone=(), camera=()
+        value: accelerometer=(), autoplay=(), camera=(), display-capture=(), encrypted-media=(), fullscreen=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), midi=(), payment=(), picture-in-picture=(), publickey-credentials-get=(), screen-wake-lock=(), usb=(), web-share=(), xr-spatial-tracking=()
+      - path: /*
+        name: Cross-Origin-Opener-Policy
+        value: same-origin-allow-popups
+      - path: /*
+        name: Cross-Origin-Resource-Policy
+        value: cross-origin
+
+      # --- HTML: sin caché agresivo (equivalente a vercel source /(.*\.html)) ---
+      - path: /*.html
+        name: Cache-Control
+        value: no-store, no-cache, must-revalidate, proxy-revalidate
+      - path: /*.html
+        name: Pragma
+        value: no-cache
+      - path: /*.html
+        name: Expires
+        value: "0"
+
+      # --- Activos versionados ---
+      - path: /css/*
+        name: Cache-Control
+        value: public, max-age=31536000, immutable
+      - path: /js/*
+        name: Cache-Control
+        value: public, max-age=31536000, immutable
+      - path: /assets/*
+        name: Cache-Control
+        value: public, max-age=31536000, immutable
