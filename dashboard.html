@@ -76,6 +76,7 @@
       </header>
 
       <main class="content">
+        <div id="matchReminderHost" class="match-reminder-host"></div>
         <!-- VISTA: DASHBOARD (OVERVIEW) -->
         <div class="tab-content active" id="tabContentOverview">
           <div class="stats-row">
@@ -214,7 +215,7 @@
                   </div>
                 </div>
               </div>
-              <div class="form-error" id="matchFormError"></div>
+              <div class="form-error" id="matchFormError" role="alert" aria-live="assertive" aria-atomic="true"></div>
               <div class="match-form-actions">
                 <button type="submit" class="btn-primary-sm" id="btnSaveMatch">
                   <svg viewBox="0 0 20 20" fill="currentColor" width="16"><path d="M7.707 10.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V6h5a2 2 0 012 2v7a2 2 0 01-2 2H4a2 2 0 01-2-2V8a2 2 0 012-2h5v5.586l-1.293-1.293z"/></svg>
@@ -341,7 +342,7 @@
       <!-- Footer -->
       <div class="acta-footer">
         <input type="hidden" id="actaMatchId" />
-        <div class="form-error form-error-flex" id="actaError"></div>
+        <div class="form-error form-error-flex" id="actaError" role="alert" aria-live="assertive" aria-atomic="true"></div>
         <button class="btn-cancel-sm" id="btnCancelActa">Cancelar</button>
         <button class="btn-primary-sm" id="btnSaveActa">
           <svg viewBox="0 0 20 20" fill="currentColor" width="16"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
@@ -377,6 +378,7 @@
   <script src="js/config.js"></script>
   <script src="js/db.js"></script>
   <script src="js/toast.js"></script>
+  <script src="js/reminders.js"></script>
   <script src="js/dashboard.js"></script>
 </body>
 </html>

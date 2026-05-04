@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Torneo público – Fixture y tabla | Montería</title>
+  <meta name="description" content="Fixture, resultados y tabla de posiciones del torneo de fútbol. Solo lectura." />
+  <link rel="stylesheet" href="css/theme.css" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/torneo-publico.css" />
+  <link rel="icon" href="img/favicon.svg" type="image/svg+xml" />
+</head>
+<body class="public-torneo-page frame-bust-pending" id="antiClickjackBody">
+  <script src="js/frame-bust.js"></script>
+
+  <header class="public-torneo-header">
+    <div class="public-torneo-brand">
+      <span aria-hidden="true">⚽</span>
+      <span>Torneo de Fútbol – Montería</span>
+    </div>
+    <nav class="public-torneo-actions" aria-label="Accesos">
+      <a href="index.html">Iniciar sesión</a>
+      <a href="register.html">Registrar equipo</a>
+    </nav>
+  </header>
+
+  <main class="public-torneo-main">
+    <p class="public-torneo-intro">
+      Vista pública para compartir: partidos y posiciones. Los datos dependen de lo que publique la organización en la plataforma.
+    </p>
+
+    <div id="publicStatus" class="public-status-msg" role="alert" aria-live="polite" hidden></div>
+
+    <section class="public-section" aria-labelledby="fixtureHeading">
+      <h2 id="fixtureHeading">Fixture</h2>
+      <div id="publicFixture"></div>
+    </section>
+
+    <section class="public-section" aria-labelledby="standingsHeading">
+      <h2 id="standingsHeading">Tabla de posiciones</h2>
+      <div id="publicStandings"></div>
+    </section>
+  </main>
+
+  <script src="js/vendor/supabase.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/db.js"></script>
+  <script src="js/public-view.js"></script>
+</body>
+</html>

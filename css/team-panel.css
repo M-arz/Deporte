@@ -171,6 +171,14 @@ body {
 }
 @media (max-width: 768px) { 
   .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; } 
+  .btn-logout-sm {
+    min-height: 44px;
+    min-width: 44px;
+    padding: 10px 16px;
+  }
+  .match-row {
+    min-height: 48px;
+  }
 }
 
 .stat-box {

@@ -122,6 +122,7 @@
 
     <!-- ══ INICIO ══════════════════════════════════════ -->
     <div class="panel-section active" id="sec-inicio">
+      <div id="matchReminderHost"></div>
       <div id="finesAlertContainer" class="mb-20"></div>
       <div id="notificationsContainer" class="mb-20"></div>
 
@@ -238,7 +239,7 @@
           </div>
 
         </div>
-        <div class="form-error form-error-mt" id="playerErr"></div>
+        <div class="form-error form-error-mt" id="playerErr" role="alert" aria-live="assertive" aria-atomic="true"></div>
         <div class="form-actions">
           <button class="btn-primary-sm" id="btnSavePlayer">
             <svg viewBox="0 0 20 20" fill="currentColor" width="15"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
@@ -363,6 +364,7 @@
   <script src="js/config.js"></script>
   <script src="js/db.js"></script>
   <script src="js/toast.js"></script>
+  <script src="js/reminders.js"></script>
   <script src="js/team-panel.js"></script>
 </body>
 </html>

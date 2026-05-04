@@ -125,9 +125,15 @@ document.addEventListener('DOMContentLoaded', async () => {
   };
 
   // ---- Refresh ----
+  const matchReminderHost = document.getElementById('matchReminderHost');
+
   const refresh = async () => {
     setLoading(true);
     await Promise.all([renderStats(), renderTeams(), renderMatches()]);
+    if (matchReminderHost && window.MatchReminders) {
+      const matches = await DB.getMatches();
+      window.MatchReminders.renderAdminBanner(matchReminderHost, matches);
+    }
     setLoading(false);
   };
 
@@ -301,7 +307,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       return new Date(`${a.fecha}T${a.hora}`) - new Date(`${b.fecha}T${b.hora}`);
     });
 
-    matchesContainer.innerHTML = `<div class="matches-list">${sorted.map(matchCard).join('')}</div>`;
+    matchesContainer.innerHTML = `<div class="matches-list-scroll"><div class="matches-list">${sorted.map(matchCard).join('')}</div></div>`;
 
     matchesContainer.querySelectorAll('.btn-result').forEach(btn => {
       btn.addEventListener('click', () => openActa(btn.dataset.id, matches));

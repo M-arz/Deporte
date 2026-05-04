@@ -277,6 +277,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderHomeStars();
     renderFinesAlert();
     renderNotifications();
+
+    const remHost = $('matchReminderHost');
+    if (remHost && window.MatchReminders) {
+      window.MatchReminders.renderTeamBanner(remHost, matches, myTeam.id);
+    }
   }
 
   // ── Sanciones / Alertas ──────────────────────────────────────
@@ -520,7 +525,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       homeMatchesEl.innerHTML = `<div class="empty"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>Aún no tienes partidos programados.</div>`;
       return;
     }
-    homeMatchesEl.innerHTML = mine.map(m => matchRow(m)).join('');
+    homeMatchesEl.innerHTML = '<div class="match-rows-scroll">' + mine.map(m => matchRow(m)).join('') + '</div>';
   }
 
   // ── Partidos (tab partidos) ──────────────────────────────────
@@ -531,7 +536,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       matchListEl.innerHTML = `<div class="empty"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>No hay partidos para tu equipo.</div>`;
       return;
     }
-    matchListEl.innerHTML = mine.map(m => matchRow(m)).join('');
+    matchListEl.innerHTML = '<div class="match-rows-scroll">' + mine.map(m => matchRow(m)).join('') + '</div>';
   }
 
   function myMatches() {

@@ -60,7 +60,7 @@
               </button>
             </div>
           </div>
-          <div class="form-error" id="loginError"></div>
+          <div class="form-error" id="loginError" role="alert" aria-live="assertive" aria-atomic="true"></div>
           <button type="submit" class="btn-auth" id="btnLogin">
             Iniciar sesión
           </button>
@@ -68,6 +68,8 @@
 
         <p class="auth-switch">¿No tienes cuenta? <a href="register.html" id="goToRegister">Registra tu equipo</a></p>
         <div class="auth-footer-text">
+          <a href="torneo-publico.html" class="privacy-link">Ver torneo público (fixture y tabla)</a>
+          <span class="auth-footer-sep" aria-hidden="true"> · </span>
           <a href="privacidad.html" target="_blank" class="privacy-link">Política de Privacidad y Tratamiento de Datos</a>
         </div>
       </div>
@@ -108,7 +110,7 @@
           <button class="btn-auth mt-20" id="btnUpdatePass">Actualizar y Entrar</button>
         </div>
 
-        <div class="form-error mt-20" id="recoverError"></div>
+        <div class="form-error mt-20" id="recoverError" role="alert" aria-live="assertive" aria-atomic="true"></div>
         <p class="auth-switch"><button type="button" id="btnBackToLogin" class="as-auth-link">Volver al inicio</button></p>
       </div>
 

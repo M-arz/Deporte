@@ -24,6 +24,12 @@ const DB = {
     this.loadSession();
   },
 
+  /** Limpia caché en memoria de listas (útil p. ej. vista pública tras otra pestaña). */
+  clearReadCache() {
+    this._teamsPromise = null;
+    this._matchesPromise = null;
+  },
+
   // ── Helpers de Seguridad ─────────────────────────────────────
   async hashPassword(password) {
     if (!password) return '';

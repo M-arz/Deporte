@@ -1,0 +1,174 @@
+/**
+ * Vista pública: fixture y tabla de posiciones (solo lectura, sin sesión).
+ * Requiere políticas RLS en Supabase que permitan SELECT anónimo en `equipos` y `partidos`.
+ */
+document.addEventListener('DOMContentLoaded', async () => {
+  const statusEl = document.getElementById('publicStatus');
+  const fixtureEl = document.getElementById('publicFixture');
+  const standingsEl = document.getElementById('publicStandings');
+
+  const esc = (str) =>
+    String(str == null ? '' : str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+
+  const formatDate = (dateStr) => {
+    if (!dateStr) return '—';
+    const parts = String(dateStr).slice(0, 10).split('-');
+    if (parts.length !== 3) return dateStr;
+    const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+    return `${parts[2]} ${months[parseInt(parts[1], 10) - 1]} ${parts[0]}`;
+  };
+
+  function setStatus(msg, isInfo) {
+    if (!statusEl) return;
+    statusEl.className = 'public-status-msg' + (isInfo ? ' is-info' : '');
+    statusEl.textContent = msg;
+    statusEl.hidden = false;
+  }
+
+  function clearStatus() {
+    if (statusEl) statusEl.hidden = true;
+  }
+
+  try {
+    DB.clearReadCache();
+    DB.init();
+
+    const [teams, matches] = await Promise.all([DB.getTeams(), DB.getMatches()]);
+
+    if ((!teams || teams.length === 0) && (!matches || matches.length === 0)) {
+      setStatus(
+        'No se pudieron cargar los datos. Si acabas de publicar el sitio, revisa en Supabase que el rol anónimo tenga permiso de lectura (SELECT) en las tablas equipos y partidos. Ver README.',
+        false
+      );
+    } else {
+      clearStatus();
+    }
+
+    const rows = await DB.getStandings();
+
+    if (matches && matches.length) {
+      const sorted = [...matches].sort((a, b) => {
+        if (a.estado !== b.estado) return a.estado === 'finalizado' ? 1 : -1;
+        return new Date(`${a.fecha}T${a.hora || '00:00'}`) - new Date(`${b.fecha}T${b.hora || '00:00'}`);
+      });
+
+      fixtureEl.innerHTML =
+        '<div class="matches-list-scroll"><div class="matches-list">' +
+        sorted
+          .map((m) => {
+            const home = m.equipo_local;
+            const away = m.equipo_visit;
+            if (!home || !away) return '';
+            const done = m.estado === 'finalizado';
+            const score = done
+              ? `<div class="match-score">${m.goles_local} – ${m.goles_visit}</div>`
+              : '<div class="match-score pending">VS</div>';
+            const fase =
+              m.fase && m.fase !== 'Clasificación General'
+                ? ` · ${esc(m.fase)}`
+                : '';
+            return `
+          <div class="match-card ${done ? 'completed' : ''}">
+            <div class="match-teams">
+              <div class="match-team">
+                <div class="match-team-name">${esc(home.nombre)}</div>
+                <div class="match-team-label">Local</div>
+              </div>
+              ${score}
+              <div class="match-team away">
+                <div class="match-team-name">${esc(away.nombre)}</div>
+                <div class="match-team-label">Visitante</div>
+              </div>
+            </div>
+            <div class="match-meta">
+              <span class="match-status-badge ${done ? 'status-completed' : 'status-pending'}">${done ? 'Finalizado' : 'Pendiente'}</span>
+              <span>${formatDate(m.fecha)} · ${esc((m.hora || '').slice(0, 5))}${fase}</span>
+            </div>
+          </div>`;
+          })
+          .join('') +
+        '</div></div>';
+    } else {
+      fixtureEl.innerHTML =
+        '<div class="empty-state"><p>No hay partidos publicados aún.</p></div>';
+    }
+
+    if (!rows || !rows.length) {
+      standingsEl.innerHTML =
+        '<div class="empty-state"><p>No hay datos de tabla de posiciones (sin equipos o sin partidos finalizados en clasificación general).</p></div>';
+    } else {
+      const groups = {};
+      rows.forEach((r) => {
+        const g = r.team.grupo || 'Único';
+        if (!groups[g]) groups[g] = [];
+        groups[g].push(r);
+      });
+
+      let html = '';
+      const groupNames = Object.keys(groups).sort();
+      groupNames.forEach((gName) => {
+        const gRows = groups[gName];
+        const tableRows = gRows
+          .map((r, i) => {
+            const dg = r.gf - r.gc;
+            const dgStr = dg > 0 ? `+${dg}` : `${dg}`;
+            const initials = r.team.nombre
+              .split(' ')
+              .map((w) => w[0])
+              .join('')
+              .slice(0, 2)
+              .toUpperCase();
+            const avatar = r.team.escudo
+              ? `<img src="${String(r.team.escudo).replace(/"/g, '&quot;')}" alt="" class="img-fit-inherit" />`
+              : initials;
+            return `
+          <tr>
+            <td class="pos-num">${i + 1}</td>
+            <td>
+              <div class="team-name-cell">
+                <div class="team-avatar-sm">${avatar}</div>
+                <span>${esc(r.team.nombre)}</span>
+              </div>
+            </td>
+            <td>${r.pj}</td>
+            <td>${r.pg}</td>
+            <td>${r.pe}</td>
+            <td>${r.pp}</td>
+            <td>${r.gf}</td>
+            <td>${r.gc}</td>
+            <td>${dgStr}</td>
+            <td class="pts-cell">${r.pts}</td>
+          </tr>`;
+          })
+          .join('');
+
+        html += `
+        ${groupNames.length > 1 ? `<h3 class="public-group-title">Grupo: ${esc(gName)}</h3>` : ''}
+        <div class="standings-wrap table-scroll-touch">
+          <table class="standings-table">
+            <thead>
+              <tr>
+                <th>#</th><th>Equipo</th>
+                <th title="Partidos jugados">PJ</th>
+                <th>G</th><th>E</th><th>P</th>
+                <th>GF</th><th>GC</th><th>DG</th><th>Pts</th>
+              </tr>
+            </thead>
+            <tbody>${tableRows}</tbody>
+          </table>
+        </div>`;
+      });
+
+      standingsEl.innerHTML =
+        html +
+        '<p class="text-muted-sm mt-10" style="color:var(--gray-400);font-size:0.82rem;">Criterios: puntos · diferencia de goles · goles a favor. Solo lectura.</p>';
+    }
+  } catch (e) {
+    console.error(e);
+    setStatus('Error al cargar el torneo. Revisa la consola o la configuración de Supabase.', false);
+  }
+});

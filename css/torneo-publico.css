@@ -1,0 +1,92 @@
+/* Vista pública del torneo (solo lectura) */
+.public-torneo-page {
+  min-height: 100vh;
+  background: linear-gradient(165deg, var(--gray-50) 0%, #0c1222 45%, var(--gray-50) 100%);
+  color: var(--gray-900);
+}
+
+.public-torneo-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--glass-border);
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(8px);
+}
+
+.public-torneo-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #fff;
+}
+
+.public-torneo-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.public-torneo-actions a {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #5eead4;
+  text-decoration: none;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(94, 234, 212, 0.35);
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+.public-torneo-actions a:hover {
+  background: rgba(94, 234, 212, 0.12);
+}
+
+.public-torneo-main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 28px 20px 48px;
+}
+
+.public-torneo-intro {
+  color: var(--gray-400);
+  font-size: 0.95rem;
+  margin-bottom: 28px;
+  line-height: 1.55;
+}
+
+.public-section {
+  margin-bottom: 40px;
+}
+
+.public-section h2 {
+  font-size: 1.25rem;
+  color: #fff;
+  margin: 0 0 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.public-status-msg {
+  padding: 16px 18px;
+  border-radius: var(--radius-sm);
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  color: #fecaca;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.public-status-msg.is-info {
+  background: rgba(59, 130, 246, 0.12);
+  border-color: rgba(59, 130, 246, 0.35);
+  color: #bfdbfe;
+}
