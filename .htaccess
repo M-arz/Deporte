@@ -15,21 +15,9 @@ Options -Indexes
 # --- Cabeceras de seguridad ---
 <IfModule mod_headers.c>
 
-    # Content-Security-Policy estricta sin unsafe-inline
-    # Directivas completas para evitar alertas de OWASP ZAP:
-    #   - default-src  : fallback base, solo 'self'
-    #   - script-src   : solo scripts locales ('self')
-    #   - style-src    : solo CSS locales ('self')
-    #   - font-src     : solo fuentes locales ('self')
-    #   - img-src      : self + data URIs (avatares/base64) + blob (canvas)
-    #   - connect-src  : self + Supabase API
-    #   - object-src   : 'none'  → bloquea Flash/plugins (sin fallback a default-src)
-    #   - worker-src   : 'none'  → bloquea Service Workers no deseados
-    #   - media-src    : 'none'  → no se usan audio/video
-    #   - form-action  : solo envíos al mismo origen
-    #   - base-uri     : solo 'self' → evita inyección de base href
-    #   - frame-ancestors: 'none' → equivalente a X-Frame-Options DENY
-    Header set Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data: blob:; connect-src 'self' https://*.supabase.co; object-src 'none'; worker-src 'none'; media-src 'none'; form-action 'self'; base-uri 'self'; frame-ancestors 'none';"
+    # Content-Security-Policy (mantener alineada con vercel.json → headers Content-Security-Policy)
+    # script-src sin 'unsafe-inline'; style-src con 'unsafe-inline' por plantillas dinámicas (dashboard / panel).
+    Header set Content-Security-Policy "default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: blob: https://*.supabase.co; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.emailjs.com; object-src 'none'; worker-src 'none'; media-src 'none'; form-action 'self'; base-uri 'self'; frame-ancestors 'none';"
 
     # Evita que el navegador adivine el MIME type
     Header set X-Content-Type-Options "nosniff"

@@ -94,3 +94,7 @@ body.privacy-body {
   border-top: 1px solid rgba(255,255,255,0.1) !important;
   padding-top: 20px !important;
 }
+
+body.privacy-body.frame-bust-pending {
+  display: none !important;
+}

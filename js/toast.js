@@ -28,32 +28,44 @@ function getContainer() {
 function showToast(message, type = 'info') {
   const container = getContainer();
 
-  // Limite: máx MAX_TOASTS simultáneos
   const existing = container.querySelectorAll('.toast');
   if (existing.length >= MAX_TOASTS) {
-    // Eliminar el más antiguo
     dismissToast(existing[0]);
   }
 
   const toast = document.createElement('div');
   toast.className = `toast ${type}`;
 
-  // Icono según tipo
   const icons = { success: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="20" height="20" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>', error: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>', info: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>' };
-  const icon = icons[type] || '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>';
+  const iconSvg = icons[type] || icons.info;
 
-  toast.innerHTML = `
-    <div style="display:flex;align-items:center;gap:10px;">
-      <span style="font-size:1.1rem;flex-shrink:0;">${icon}</span>
-      <span style="flex:1;font-size:0.88rem;font-weight:600;line-height:1.4;">${escapeHtml(message)}</span>
-      <button onclick="dismissToast(this.parentElement.parentElement)"
-        style="background:none;border:none;color:inherit;cursor:pointer;font-size:1rem;padding:0;opacity:0.7;flex-shrink:0;"
-        aria-label="Cerrar notificación"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-    </div>`;
+  const row = document.createElement('div');
+  row.style.cssText = 'display:flex;align-items:center;gap:10px;';
+
+  const iconWrap = document.createElement('span');
+  iconWrap.style.cssText = 'font-size:1.1rem;flex-shrink:0;';
+  iconWrap.innerHTML = iconSvg;
+
+  const msg = document.createElement('span');
+  msg.style.cssText = 'flex:1;font-size:0.88rem;font-weight:600;line-height:1.4;';
+  msg.textContent = String(message);
+
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.style.cssText = 'background:none;border:none;color:inherit;cursor:pointer;font-size:1rem;padding:0;opacity:0.7;flex-shrink:0;';
+  btn.setAttribute('aria-label', 'Cerrar notificación');
+  btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+  btn.addEventListener('click', function () {
+    dismissToast(toast);
+  });
+
+  row.appendChild(iconWrap);
+  row.appendChild(msg);
+  row.appendChild(btn);
+  toast.appendChild(row);
 
   container.appendChild(toast);
 
-  // Auto-dismiss
   const timer = setTimeout(() => dismissToast(toast), TOAST_DURATION);
   toast._timer = timer;
 }
@@ -65,13 +77,5 @@ function dismissToast(toast) {
   setTimeout(() => toast.remove(), TOAST_ANIM_OUT);
 }
 
-/** Escapa HTML para evitar XSS en el mensaje */
-function escapeHtml(str) {
-  const div = document.createElement('div');
-  div.appendChild(document.createTextNode(String(str)));
-  return div.innerHTML;
-}
-
-// Exportar globalmente
 window.showToast    = showToast;
 window.dismissToast = dismissToast;

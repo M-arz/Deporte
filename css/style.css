@@ -68,6 +68,15 @@ body {
 }
 .font-auth-link:hover { opacity: 0.8; text-decoration: underline; }
 
+button.font-auth-link {
+  font: inherit;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  text-align: inherit;
+}
+
 .btn-toggle-pass {
   position: absolute;
   right: 12px;
@@ -379,6 +388,19 @@ body {
   transition: color var(--transition);
 }
 .auth-switch a:hover { color: var(--blue); }
+
+.auth-switch button.as-auth-link {
+  font: inherit;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  color: var(--green-dark);
+  font-weight: 600;
+  text-decoration: none;
+  transition: color var(--transition);
+}
+.auth-switch button.as-auth-link:hover { color: var(--blue); }
 
 /* Demo hint */
 .demo-hint {

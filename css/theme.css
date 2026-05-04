@@ -89,3 +89,8 @@ body {
   .sidebar { display: none; }
   .btn-menu-mobile { display: block; }
 }
+
+/* Anti–clickjacking: ocultar hasta confirmar que no estamos en iframe (js/frame-bust.js) */
+body.frame-bust-pending {
+  display: none !important;
+}
