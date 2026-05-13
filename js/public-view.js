@@ -71,16 +71,25 @@ document.addEventListener('DOMContentLoaded', async () => {
               m.fase && m.fase !== 'Clasificación General'
                 ? ` · ${esc(m.fase)}`
                 : '';
+            const homeShield = home.escudo 
+              ? `<img src="${esc(home.escudo)}" class="team-shield-mini" alt="">`
+              : `<div class="team-initials-mini">${esc(home.nombre.substring(0,2).toUpperCase())}</div>`;
+            const awayShield = away.escudo 
+              ? `<img src="${esc(away.escudo)}" class="team-shield-mini" alt="">`
+              : `<div class="team-initials-mini">${esc(away.nombre.substring(0,2).toUpperCase())}</div>`;
+
             return `
           <div class="match-card ${done ? 'completed' : ''}">
             <div class="match-teams">
               <div class="match-team">
+                ${homeShield}
                 <div class="match-team-name">${esc(home.nombre)}</div>
                 <div class="match-team-label">Local</div>
               </div>
               ${score}
               <div class="match-team away">
                 <div class="match-team-name">${esc(away.nombre)}</div>
+                ${awayShield}
                 <div class="match-team-label">Visitante</div>
               </div>
             </div>
@@ -123,14 +132,14 @@ document.addEventListener('DOMContentLoaded', async () => {
               .slice(0, 2)
               .toUpperCase();
             const avatar = r.team.escudo
-              ? `<img src="${String(r.team.escudo).replace(/"/g, '&quot;')}" alt="" class="img-fit-inherit" />`
-              : initials;
+              ? `<img src="${esc(r.team.escudo)}" alt="" class="team-shield-mini" />`
+              : `<div class="team-initials-mini">${initials}</div>`;
             return `
           <tr>
             <td class="pos-num">${i + 1}</td>
             <td>
               <div class="team-name-cell">
-                <div class="team-avatar-sm">${avatar}</div>
+                ${avatar}
                 <span>${esc(r.team.nombre)}</span>
               </div>
             </td>
