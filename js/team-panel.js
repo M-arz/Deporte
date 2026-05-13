@@ -461,12 +461,49 @@ document.addEventListener('DOMContentLoaded', async () => {
         deleteModal.classList.remove('hidden');
       });
     });
+
+    // ── Subir / Cambiar foto de jugador ya registrado ──────────
+    playersGrid.querySelectorAll('.player-photo-file-input').forEach(input => {
+      input.addEventListener('change', async () => {
+        const file = input.files[0];
+        if (!file) return;
+        if (file.size > 2 * 1024 * 1024) {
+          showToast('La imagen debe pesar menos de 2MB.', 'error');
+          input.value = '';
+          return;
+        }
+        const playerId = input.dataset.id;
+        const label = input.closest('label');
+        const origText = label.textContent.trim();
+        label.style.opacity = '0.6';
+        label.style.pointerEvents = 'none';
+
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+          const base64 = e.target.result;
+          const res = await DB.updatePlayerPhoto(playerId, base64);
+          label.style.opacity = '';
+          label.style.pointerEvents = '';
+          if (res.ok) {
+            showToast('Foto actualizada correctamente.', 'success');
+            players = await DB.getPlayersByTeam(myTeam.id);
+            renderPlayers();
+          } else {
+            showToast('Error al subir la foto: ' + (res.error || ''), 'error');
+          }
+          input.value = '';
+        };
+        reader.readAsDataURL(file);
+      });
+    });
   }
 
   function playerCard(p) {
     const foto = p.foto
       ? `<img src="${p.foto}" alt="${esc(p.nombre)}" class="player-photo" />`
       : `<div class="player-photo-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>`;
+
+    const fotoLabel = p.foto ? 'Cambiar foto' : 'Subir foto';
 
     const dob = p.fecha_nac
       ? new Date(p.fecha_nac + 'T00:00:00').toLocaleDateString('es-CO', { day:'2-digit', month:'short', year:'numeric' })
@@ -479,6 +516,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         <div class="player-name">${esc(p.nombre)}</div>
         <div class="player-pos-pill pos-${p.posicion}">${p.posicion}</div>
         <div class="player-doc">${esc(p.documento)}${dob ? ' · ' + dob : ''}</div>
+        <label class="btn-upload-photo-card" title="${fotoLabel}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14" style="vertical-align:middle; margin-right:4px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          ${fotoLabel}
+          <input type="file" accept="image/*" class="player-photo-file-input" data-id="${p.id}" style="display:none;" />
+        </label>
         <button class="btn-carnet-card" data-id="${p.id}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14" style="vertical-align:middle; margin-right:4px;"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v2Z"/><path d="M13 5v2"/><path d="M13 17v2"/><path d="M13 11v2"/></svg> Ver Carnet</button>
         <button class="btn-remove-card" data-id="${p.id}" data-name="${esc(p.nombre)}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14" style="vertical-align:middle; margin-right:4px;"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg> Eliminar</button>
       </div>`;

@@ -291,6 +291,11 @@ const DB = {
     return error ? [] : data;
   },
 
+  async updatePlayerPhoto(playerId, base64) {
+    const { error } = await this.client.from('jugadores').update({ foto: base64 }).eq('id', playerId);
+    return error ? { ok: false, error: error.message } : { ok: true };
+  },
+
   async addPlayers(teamId, playersArray) {
     const toInsert = playersArray.map(p => ({ ...p, equipo_id: teamId }));
     const { data, error } = await this.client.from('jugadores').insert(toInsert).select();
