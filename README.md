@@ -1,5 +1,14 @@
 # Torneo de Fútbol — Montería
 
+## Seguridad de Supabase
+
+Para crear o corregir la base de datos, usa este orden:
+
+1. Ejecuta `database_schema.sql` si necesitas crear las tablas.
+2. Ejecuta `security_rls_final.sql` inmediatamente despues.
+
+No uses los scripts antiguos de blindaje/borrado para permisos: quedaron obsoletos porque abrian politicas publicas. La fuente vigente de RLS es `security_rls_final.sql`.
+
 Aplicación estática (HTML, CSS, JavaScript) para gestionar un torneo de fútbol: equipos, partidos y paneles de administración y de equipo. Los datos y la autenticación usan [Supabase](https://supabase.com/); el envío de correos en el flujo de login puede usar [EmailJS](https://www.emailjs.com/).
 
 ## Puesta en marcha
