@@ -237,8 +237,8 @@ const DB = {
 
       const userId = authData.user.id;
 
-      // 2. Insertar perfil en la tabla pública 'usuarios'
-      const { error: profileError } = await this.client.from('usuarios').insert([{
+      // 2. Insertar o actualizar perfil en la tabla pública 'usuarios'
+      const { error: profileError } = await this.client.from('usuarios').upsert([{
         id: userId,
         email: email.trim().toLowerCase(),
         nombre: name,
@@ -247,8 +247,7 @@ const DB = {
 
       if (profileError) {
         console.error('Error al insertar perfil admin:', profileError);
-        // La cuenta Auth ya fue creada; avisamos pero no bloqueamos
-        return { ok: true, warning: 'Cuenta creada, pero el perfil público falló: ' + profileError.message };
+        return { ok: false, error: 'Cuenta creada, pero no se pudo asignar el rol de admin: ' + profileError.message };
       }
 
       console.log('Administrador registrado con éxito');

@@ -5,7 +5,7 @@
  */
 
 // ⚠️ Cambia este valor por tu código secreto real (mantenlo en privado)
-const ADMIN_SECRET_CODE = 'TORNEO2025ADMIN';
+const ADMIN_SECRET_CODE = '123456789';
 
 document.addEventListener('DOMContentLoaded', async () => {
   // Seguridad: Ignorar parámetros de URL (evitar ataques de reflexión)
