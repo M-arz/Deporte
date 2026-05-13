@@ -4,12 +4,93 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Registrar Equipo – Torneo de Fútbol Montería</title>
-  <meta name="description" content="Registra tu equipo en el torneo de fútbol de Montería, Córdoba." />
+  <title>Registro – Torneo de Fútbol Montería</title>
+  <meta name="description" content="Regístrate en el torneo de fútbol de Montería, Córdoba. Delegados de equipo e administradores." />
   <link rel="stylesheet" href="css/theme.css" />
   <link rel="stylesheet" href="css/style.css" />
   <link rel="stylesheet" href="css/register.css" />
   <link rel="icon" href="img/favicon.svg" type="image/svg+xml" />
+  <style>
+    /* ── Selector de Rol ── */
+    .role-selector {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 4px;
+    }
+    .role-card {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 10px;
+      border: 2px solid rgba(255,255,255,0.12);
+      border-radius: 12px;
+      background: rgba(255,255,255,0.04);
+      cursor: pointer;
+      transition: all 0.22s ease;
+      color: var(--text-muted, #94a3b8);
+      font-size: 0.82rem;
+      font-weight: 500;
+      text-align: center;
+      user-select: none;
+    }
+    .role-card svg { opacity: 0.6; transition: opacity 0.2s; }
+    .role-card:hover {
+      border-color: rgba(99,102,241,0.5);
+      background: rgba(99,102,241,0.08);
+      color: #c7d2fe;
+    }
+    .role-card.active {
+      border-color: #6366f1;
+      background: rgba(99,102,241,0.15);
+      color: #c7d2fe;
+    }
+    .role-card.active svg { opacity: 1; }
+    .role-card.active .role-dot {
+      background: #6366f1;
+      box-shadow: 0 0 0 3px rgba(99,102,241,0.3);
+    }
+    .role-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.2);
+      transition: all 0.22s;
+    }
+
+    /* ── Sección de Admin ── */
+    .admin-code-section {
+      display: none;
+      animation: fadeSlideIn 0.3s ease;
+    }
+    .admin-code-section.visible { display: block; }
+
+    .admin-badge {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: 10px;
+      background: rgba(239,68,68,0.1);
+      border: 1px solid rgba(239,68,68,0.25);
+      margin-bottom: 14px;
+      font-size: 0.8rem;
+      color: #fca5a5;
+    }
+    .admin-badge svg { flex-shrink: 0; }
+
+    @keyframes fadeSlideIn {
+      from { opacity: 0; transform: translateY(-8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Sección de Equipo ── */
+    .team-section {
+      display: block;
+      animation: fadeSlideIn 0.3s ease;
+    }
+    .team-section.hidden-section { display: none; }
+  </style>
 </head>
 
 <body class="auth-body frame-bust-pending" id="antiClickjackBody">
@@ -25,149 +106,220 @@
     <!-- Mitad Izquierda: Formulario -->
     <div class="auth-split-left">
       <div class="auth-card" id="registerCard">
-    <div class="auth-logo">
-      <div class="logo-circle">
-        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"
-          stroke-linejoin="round">
-          <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
-          <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
-          <path d="M4 22h16" />
-          <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" />
-          <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" />
-          <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
-        </svg>
+        <div class="auth-logo">
+          <div class="logo-circle">
+            <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
+              <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
+              <path d="M4 22h16" />
+              <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" />
+              <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" />
+              <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
+            </svg>
+          </div>
+        </div>
+        <h1 class="auth-title" id="registerTitle">Crear Cuenta</h1>
+        <p class="auth-subtitle" id="registerSubtitle">Únete al torneo de Montería</p>
+
+        <!-- ── Selector de Rol ── -->
+        <div class="form-field">
+          <label>¿Cómo quieres registrarte?</label>
+          <div class="role-selector">
+            <!-- Delegado de Equipo -->
+            <div class="role-card active" id="roleTeam" role="button" tabindex="0" aria-label="Delegado de Equipo">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="28" height="28"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0z"/>
+                <path d="M18 8a2 2 0 11-4 0 2 2 0 014 0z"/>
+                <path d="M14 15a4 4 0 00-8 0v3h8v-3z"/>
+                <path d="M16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3z"/>
+              </svg>
+              <span>Delegado de Equipo</span>
+              <div class="role-dot"></div>
+            </div>
+            <!-- Administrador -->
+            <div class="role-card" id="roleAdmin" role="button" tabindex="0" aria-label="Administrador">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="28" height="28"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                <polyline points="9 12 11 14 15 10"/>
+              </svg>
+              <span>Administrador</span>
+              <div class="role-dot"></div>
+            </div>
+          </div>
+        </div>
+
+        <form id="registerForm" class="auth-form" novalidate>
+          <!-- ── Campos exclusivos del equipo ── -->
+          <div class="team-section" id="teamSection">
+            <div class="form-field">
+              <label for="teamName">Nombre del Equipo</label>
+              <div class="input-wrap">
+                <svg class="input-icon" viewBox="0 0 20 20" fill="currentColor">
+                  <path
+                    d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z" />
+                </svg>
+                <input type="text" id="teamName" name="teamName" placeholder="Los Tigres FC" maxlength="50" />
+              </div>
+            </div>
+
+            <!-- Escudo del equipo (opcional) -->
+            <div class="form-field shield-upload-wrap">
+              <label>Escudo del Equipo <span class="font-muted-hint">(opcional)</span></label>
+              <div class="shield-upload-row">
+                <div class="shield-preview" id="shieldPreview">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="32" height="32" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0.5;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                </div>
+                <div class="shield-upload-info">
+                  <label for="shieldInput" class="shield-upload-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg> Subir escudo
+                  </label>
+                  <input type="file" id="shieldInput" accept="image/*" />
+                  <span class="shield-hint">JPG, PNG · máx. 2MB</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── Campo de nombre (admin) ── -->
+          <div class="admin-code-section" id="adminNameSection">
+            <div class="form-field">
+              <label for="adminName">Tu nombre completo</label>
+              <div class="input-wrap">
+                <svg class="input-icon" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
+                </svg>
+                <input type="text" id="adminName" name="adminName" placeholder="Nombre Apellido" maxlength="80" />
+              </div>
+            </div>
+          </div>
+
+          <!-- ── Correo (común) ── -->
+          <div class="form-field">
+            <label for="regEmail">Correo electrónico</label>
+            <div class="input-wrap">
+              <svg class="input-icon" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+                <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+              </svg>
+              <input type="email" id="regEmail" name="email" placeholder="correo@ejemplo.com" autocomplete="email"
+                required />
+            </div>
+          </div>
+
+          <!-- ── Contraseña (común) ── -->
+          <div class="form-field">
+            <label for="regPassword">Contraseña</label>
+            <div class="input-wrap">
+              <svg class="input-icon" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd"
+                  d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
+                  clip-rule="evenodd" />
+              </svg>
+              <input type="password" id="regPassword" name="password" placeholder="••••••••" autocomplete="new-password"
+                required minlength="6" />
+              <button type="button" id="btnTogglePass" class="btn-toggle-pass"
+                title="Mostrar/ocultar contraseña">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+            <small class="font-small-hint">Mínimo 6 caracteres, debe incluir al
+              menos un número.</small>
+          </div>
+
+          <!-- ── Confirmar contraseña (común) ── -->
+          <div class="form-field">
+            <label for="regPasswordConfirm">Confirmar Contraseña</label>
+            <div class="input-wrap">
+              <svg class="input-icon" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd"
+                  d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
+                  clip-rule="evenodd" />
+              </svg>
+              <input type="password" id="regPasswordConfirm" name="passwordConfirm" placeholder="••••••••"
+                autocomplete="new-password" required minlength="6" />
+              <button type="button" id="btnToggleConfirm" class="btn-toggle-pass"
+                title="Mostrar/ocultar contraseña"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+            </div>
+          </div>
+
+          <!-- ── Municipio (solo equipo) ── -->
+          <div class="form-field team-section" id="citySection">
+            <label for="teamCity">Municipio</label>
+            <div class="input-wrap input-wrap-select">
+              <svg class="input-icon" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd"
+                  d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
+                  clip-rule="evenodd" />
+              </svg>
+              <select id="teamCity" name="city">
+                <option value="">Selecciona municipio</option>
+                <option value="Montería">Montería</option>
+                <option value="Cereté">Cereté</option>
+                <option value="Sahagún">Sahagún</option>
+                <option value="Lorica">Lorica</option>
+                <option value="Chinú">Chinú</option>
+                <option value="Montelíbano">Montelíbano</option>
+                <option value="Planeta Rica">Planeta Rica</option>
+                <option value="Pueblo Nuevo">Pueblo Nuevo</option>
+                <option value="Otro">Otro</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- ── Código secreto (solo admin) ── -->
+          <div class="admin-code-section" id="adminCodeSection">
+            <div class="admin-badge">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                <polyline points="9 12 11 14 15 10"/>
+              </svg>
+              <span>Solo el organizador del torneo puede registrarse como administrador.</span>
+            </div>
+            <div class="form-field">
+              <label for="adminCode">Código de acceso de administrador</label>
+              <div class="input-wrap">
+                <svg class="input-icon" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M18 8a6 6 0 01-7.743 5.743L10 14l-1 1-1 1H6v2H2v-4l4.257-4.257A6 6 0 1118 8zm-6-4a1 1 0 100 2 2 2 0 012 2 1 1 0 102 0 4 4 0 00-4-4z" clip-rule="evenodd"/>
+                </svg>
+                <input type="password" id="adminCode" name="adminCode" placeholder="Código secreto" />
+              </div>
+            </div>
+          </div>
+
+          <!-- ── Términos (común) ── -->
+          <div class="form-field">
+            <label class="terms-checkbox-wrap terms-label">
+              <input type="checkbox" id="acceptTerms" name="acceptTerms" required class="terms-check">
+              <span>
+                Acepto la <a href="privacidad.html" target="_blank" id="linkPrivacy" class="terms-link">Política de Privacidad y Tratamiento de Datos</a>, y consiento el uso de la información para los fines del torneo.
+              </span>
+            </label>
+          </div>
+
+          <div class="form-error" id="registerError" role="alert" aria-live="assertive" aria-atomic="true"></div>
+
+          <button type="submit" class="btn-auth" id="btnRegister">
+            Registrar Equipo
+          </button>
+        </form>
+
+        <p class="auth-switch">¿Ya tienes cuenta? <a href="index.html" id="goToLogin">Inicia sesión</a></p>
+        <p class="auth-footer-text" style="margin-top:14px;text-align:center;">
+          <a href="torneo-publico.html" class="privacy-link">Ver torneo público (fixture y tabla)</a>
+        </p>
       </div>
     </div>
-    <h1 class="auth-title">Registrar Equipo</h1>
-    <p class="auth-subtitle">Únete al torneo de Montería</p>
 
-    <form id="registerForm" class="auth-form" novalidate>
-      <div class="form-field">
-        <label for="teamName">Nombre del Equipo</label>
-        <div class="input-wrap">
-          <svg class="input-icon" viewBox="0 0 20 20" fill="currentColor">
-            <path
-              d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z" />
-          </svg>
-          <input type="text" id="teamName" name="teamName" placeholder="Los Tigres FC" required maxlength="50" />
-        </div>
-      </div>
-
-      <!-- Escudo del equipo (opcional) -->
-      <div class="form-field shield-upload-wrap">
-        <label>Escudo del Equipo <span class="font-muted-hint">(opcional)</span></label>
-        <div class="shield-upload-row">
-          <div class="shield-preview" id="shieldPreview">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="32" height="32" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0.5;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-          </div>
-          <div class="shield-upload-info">
-            <label for="shieldInput" class="shield-upload-btn">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg> Subir escudo
-            </label>
-            <input type="file" id="shieldInput" accept="image/*" />
-            <span class="shield-hint">JPG, PNG · máx. 2MB</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="form-field">
-        <label for="regEmail">Correo electrónico</label>
-        <div class="input-wrap">
-          <svg class="input-icon" viewBox="0 0 20 20" fill="currentColor">
-            <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
-            <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
-          </svg>
-          <input type="email" id="regEmail" name="email" placeholder="correo@ejemplo.com" autocomplete="email"
-            required />
-        </div>
-      </div>
-
-      <div class="form-field">
-        <label for="regPassword">Contraseña</label>
-        <div class="input-wrap">
-          <svg class="input-icon" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd"
-              d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
-              clip-rule="evenodd" />
-          </svg>
-          <input type="password" id="regPassword" name="password" placeholder="••••••••" autocomplete="new-password"
-            required minlength="6" />
-          <button type="button" id="btnTogglePass" class="btn-toggle-pass"
-            title="Mostrar/ocultar contraseña">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-          </button>
-        </div>
-        <small class="font-small-hint">Mínimo 6 caracteres, debe incluir al
-          menos un número.</small>
-      </div>
-
-      <div class="form-field">
-        <label for="regPasswordConfirm">Confirmar Contraseña</label>
-        <div class="input-wrap">
-          <svg class="input-icon" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd"
-              d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
-              clip-rule="evenodd" />
-          </svg>
-          <input type="password" id="regPasswordConfirm" name="passwordConfirm" placeholder="••••••••"
-            autocomplete="new-password" required minlength="6" />
-          <button type="button" id="btnToggleConfirm" class="btn-toggle-pass"
-            title="Mostrar/ocultar contraseña"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
-        </div>
-      </div>
-
-      <div class="form-field">
-        <label for="teamCity">Municipio</label>
-        <div class="input-wrap input-wrap-select">
-          <svg class="input-icon" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd"
-              d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
-              clip-rule="evenodd" />
-          </svg>
-          <select id="teamCity" name="city" required>
-            <option value="">Selecciona municipio</option>
-            <option value="Montería">Montería</option>
-            <option value="Cereté">Cereté</option>
-            <option value="Sahagún">Sahagún</option>
-            <option value="Lorica">Lorica</option>
-            <option value="Chinú">Chinú</option>
-            <option value="Montelíbano">Montelíbano</option>
-            <option value="Planeta Rica">Planeta Rica</option>
-            <option value="Pueblo Nuevo">Pueblo Nuevo</option>
-            <option value="Otro">Otro</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="form-field">
-        <label class="terms-checkbox-wrap terms-label">
-          <input type="checkbox" id="acceptTerms" name="acceptTerms" required class="terms-check">
-          <span>
-            Acepto la <a href="privacidad.html" target="_blank" id="linkPrivacy" class="terms-link">Política de Privacidad y Tratamiento de Datos</a>, y consiento el uso de la información del equipo y jugadores para los fines del torneo.
-          </span>
-        </label>
-      </div>
-
-      <div class="form-error" id="registerError" role="alert" aria-live="assertive" aria-atomic="true"></div>
-
-      <button type="submit" class="btn-auth" id="btnRegister">
-        Registrar Equipo
-      </button>
-    </form>
-
-    <p class="auth-switch">¿Ya tienes cuenta? <a href="index.html" id="goToLogin">Inicia sesión</a></p>
-    <p class="auth-footer-text" style="margin-top:14px;text-align:center;">
-      <a href="torneo-publico.html" class="privacy-link">Ver torneo público (fixture y tabla)</a>
-    </p>
+    <!-- Mitad Derecha: Imagen del Estadio -->
+    <div class="auth-split-right">
+      <div class="auth-split-overlay"></div>
+      <img src="img/stadium_bg.png" alt="Estadio de fútbol moderno iluminado de noche">
+    </div>
   </div>
-  </div>
-
-  <!-- Mitad Derecha: Imagen del Estadio -->
-  <div class="auth-split-right">
-    <div class="auth-split-overlay"></div>
-    <img src="img/stadium_bg.png" alt="Estadio de fútbol moderno iluminado de noche">
-  </div>
-</div>
   <!-- Supabase SDK (local) -->
   <script src="js/vendor/supabase.min.js"></script>
   <script src="js/config.js"></script>

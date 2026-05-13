@@ -7,8 +7,33 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // ── Auth Guard ────────────────────────────────────────────────
   const session = DB.getSession();
-  if (!session)               { window.location.href = 'index.html';   return; }
-  if (session.rol === 'admin') { window.location.href = 'dashboard.html'; return; }
+  if (!session) { window.location.href = 'index.html'; return; }
+
+  if (session.rol === 'admin') {
+    // El admin debe ir al dashboard, no al panel de equipo
+    document.body.innerHTML = `
+      <div style="
+        min-height:100vh; display:flex; flex-direction:column; align-items:center;
+        justify-content:center; background:#0f172a; color:#f1f5f9; gap:16px;
+        font-family:system-ui,sans-serif; padding:24px; text-align:center;
+      ">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2" width="64" height="64"
+          stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          <polyline points="9 12 11 14 15 10"/>
+        </svg>
+        <h1 style="font-size:1.6rem; margin:0;">Panel de Administrador</h1>
+        <p style="color:#94a3b8; max-width:360px; margin:0;">
+          Como administrador, tu área de trabajo es el Dashboard.
+          Serás redirigido automáticamente...
+        </p>
+        <div style="width:40px; height:4px; border-radius:2px; background:#6366f1;
+          animation: prog 2s linear forwards;"></div>
+        <style>@keyframes prog { from{width:40px} to{width:200px} }</style>
+      </div>`;
+    setTimeout(() => { window.location.href = 'dashboard.html'; }, 2200);
+    return;
+  }
 
   // ── Estado ───────────────────────────────────────────────────
   let myTeam    = null;

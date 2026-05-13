@@ -6,8 +6,34 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // ---- Auth Guard ----
   const session = DB.getSession();
-  if (!session)              { window.location.href = 'index.html';    return; }
-  if (session.rol !== 'admin') { window.location.href = 'team-panel.html'; return; }
+  if (!session) { window.location.href = 'index.html'; return; }
+
+  if (session.rol !== 'admin') {
+    // Mostrar pantalla de acceso denegado y redirigir al panel correcto
+    document.body.innerHTML = `
+      <div style="
+        min-height:100vh; display:flex; flex-direction:column; align-items:center;
+        justify-content:center; background:#0f172a; color:#f1f5f9; gap:16px;
+        font-family:system-ui,sans-serif; padding:24px; text-align:center;
+      ">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" width="64" height="64"
+          stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="15" y1="9" x2="9" y2="15"/>
+          <line x1="9" y1="9" x2="15" y2="15"/>
+        </svg>
+        <h1 style="font-size:1.6rem; margin:0;">Acceso restringido</h1>
+        <p style="color:#94a3b8; max-width:360px; margin:0;">
+          Esta área es exclusiva para administradores.
+          Serás redirigido a tu panel de delegado...
+        </p>
+        <div style="width:40px; height:4px; border-radius:2px; background:#6366f1;
+          animation: prog 2s linear forwards;"></div>
+        <style>@keyframes prog { from{width:40px} to{width:200px} }</style>
+      </div>`;
+    setTimeout(() => { window.location.href = 'team-panel.html'; }, 2200);
+    return;
+  }
 
   // ---- DOM refs ----
   const dashUserNameSide = document.getElementById('dashUserNameSide');

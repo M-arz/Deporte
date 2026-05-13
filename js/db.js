@@ -204,6 +204,61 @@ const DB = {
     }
   },
 
+  async addAdmin({ name, email, password }) {
+    if (!this.client) {
+      return { ok: false, error: 'La base de datos no está lista. Intenta recargar la página.' };
+    }
+    try {
+      console.log('Iniciando registro de administrador:', email);
+
+      // 1. Crear usuario en Auth con rol 'admin'
+      const { data: authData, error: authError } = await this.client.auth.signUp({
+        email: email.trim().toLowerCase(),
+        password: password,
+        options: {
+          data: {
+            nombre: name,
+            rol: 'admin'
+          }
+        }
+      });
+
+      if (authError) {
+        console.error('Error Supabase Auth (admin):', authError);
+        if (authError.message.includes('already registered')) {
+          return { ok: false, error: 'Este correo ya tiene una cuenta activa. Usa un correo diferente.' };
+        }
+        return { ok: false, error: 'Error de autenticación: ' + authError.message };
+      }
+
+      if (!authData.user) {
+        return { ok: false, error: 'No se pudo crear el usuario administrador.' };
+      }
+
+      const userId = authData.user.id;
+
+      // 2. Insertar perfil en la tabla pública 'usuarios'
+      const { error: profileError } = await this.client.from('usuarios').insert([{
+        id: userId,
+        email: email.trim().toLowerCase(),
+        nombre: name,
+        rol: 'admin'
+      }]);
+
+      if (profileError) {
+        console.error('Error al insertar perfil admin:', profileError);
+        // La cuenta Auth ya fue creada; avisamos pero no bloqueamos
+        return { ok: true, warning: 'Cuenta creada, pero el perfil público falló: ' + profileError.message };
+      }
+
+      console.log('Administrador registrado con éxito');
+      return { ok: true };
+    } catch (err) {
+      console.error('Error crítico en addAdmin:', err);
+      return { ok: false, error: 'Ocurrió un error inesperado. Revisa tu conexión.' };
+    }
+  },
+
   async deleteTeam(teamId) {
     // 1. Obtener el ID del usuario vinculado antes de borrar el equipo
     const { data: team } = await this.client.from('equipos').select('usuario_id').eq('id', teamId).single();
